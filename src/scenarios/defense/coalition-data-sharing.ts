@@ -1,0 +1,160 @@
+import { NodeType } from "@/types/organization";
+import type { ScenarioTemplate } from "@/types/scenario";
+import { ARCHETYPES } from "../archetypes";
+import { REGULATORY_DB } from "@/lib/regulatory-data";
+
+export const coalitionDataSharingScenario: ScenarioTemplate = {
+  id: "defense-coalition-data-sharing",
+  name: "Time-Sensitive Coalition Intelligence Release",
+  description:
+    "A U.S. combatant command receives near-real-time ISR data indicating imminent hostile activity in a multinational operating area. The intelligence is classified SECRET//NOFORN pending review. Release to a Five Eyes partner requires Original Classification Authority (OCA) authorization to change the NOFORN caveat to REL TO FVEY, Foreign Disclosure Officer (FDO) adjudication under NDP-1, and sanitization review to remove source-identifying details before distribution via the Mission Partner Environment (MPE). The FDO is deployed forward with limited JWICS connectivity, stalling the mandatory foreign disclosure determination. Assumes the intelligence has been validated and the partner nation is on the approved disclosure list.",
+  icon: "ShieldCheck",
+  industryId: "defense",
+  archetypeId: "multi-party-approval",
+  prompt:
+    "What happens when time-sensitive ISR data marked SECRET//NOFORN needs release to a Five Eyes partner but the Foreign Disclosure Officer is deployed forward with limited JWICS connectivity and no certified Alternate FDO is designated?",
+  actors: [
+    {
+      id: "nato-command",
+      type: NodeType.Organization,
+      label: "Combatant Command",
+      parentId: null,
+      organizationId: "nato-command",
+      color: "#22C55E",
+    },
+    {
+      id: "nation-a",
+      type: NodeType.Partner,
+      label: "Five Eyes Partner",
+      description: "Allied partner nation on the approved disclosure list requesting intelligence release for coordinated operational planning",
+      parentId: null,
+      organizationId: "nation-a",
+      color: "#3B82F6",
+    },
+    {
+      id: "mpe",
+      type: NodeType.System,
+      label: "Mission Partner Environment",
+      description: "Coalition classified network enabling intelligence sharing at the REL TO classification level among authorized partner nations",
+      parentId: "nato-command",
+      organizationId: "nato-command",
+      color: "#8B5CF6",
+    },
+    {
+      id: "intel-division",
+      type: NodeType.Department,
+      label: "J2 Intelligence",
+      description: "Combatant command intelligence directorate responsible for ISR production, classification management, and foreign disclosure coordination",
+      parentId: "nato-command",
+      organizationId: "nato-command",
+      color: "#06B6D4",
+    },
+    {
+      id: "all-source-analyst",
+      type: NodeType.Role,
+      label: "All-Source Analyst",
+      description: "Intelligence analyst who produces the ISR product and identifies the need for coalition release — initiates the disclosure request but holds no approval authority",
+      parentId: "intel-division",
+      organizationId: "nato-command",
+      color: "#94A3B8",
+    },
+    {
+      id: "oca",
+      type: NodeType.Role,
+      label: "Original Classification Authority",
+      description: "OCA authorized to modify classification markings — must authorize the NOFORN-to-REL TO FVEY caveat change before foreign disclosure can proceed",
+      parentId: "intel-division",
+      organizationId: "nato-command",
+      color: "#94A3B8",
+    },
+    {
+      id: "sanitization-reviewer",
+      type: NodeType.Role,
+      label: "Sanitization Reviewer",
+      description: "OPSEC-trained reviewer responsible for removing source-identifying details, intelligence methods references, and compartmented indicators before coalition release",
+      parentId: "intel-division",
+      organizationId: "nato-command",
+      color: "#94A3B8",
+    },
+    {
+      id: "fdo",
+      type: NodeType.Role,
+      label: "Foreign Disclosure Officer",
+      description: "FDO responsible for foreign disclosure determination under NDP-1 and DoDI 5230.11 — mandatory approval authority that cannot be threshold-skipped, only delegated to a certified Alternate FDO",
+      parentId: "nato-command",
+      organizationId: "nato-command",
+      color: "#94A3B8",
+    },
+    {
+      id: "afdo",
+      type: NodeType.Role,
+      label: "Alternate FDO",
+      description: "Certified Alternate Foreign Disclosure Officer designated to exercise FDO authority when the primary FDO is unavailable — must hold current FDO certification under DoDI 5230.11",
+      parentId: "nato-command",
+      organizationId: "nato-command",
+      color: "#94A3B8",
+    },
+  ],
+  policies: [
+    {
+      id: "policy-coalition-sharing",
+      actorId: "nato-command",
+      threshold: {
+        k: 3,
+        n: 3,
+        approverRoleIds: ["fdo", "oca", "sanitization-reviewer"],
+      },
+      expirySeconds: 43200,
+      delegationAllowed: true,
+      delegateToRoleId: "afdo",
+    },
+  ],
+  edges: [
+    { sourceId: "nato-command", targetId: "intel-division", type: "authority" },
+    { sourceId: "nato-command", targetId: "fdo", type: "authority" },
+    { sourceId: "nato-command", targetId: "afdo", type: "authority" },
+    { sourceId: "nato-command", targetId: "mpe", type: "authority" },
+    { sourceId: "nato-command", targetId: "nation-a", type: "authority" },
+    { sourceId: "intel-division", targetId: "all-source-analyst", type: "authority" },
+    { sourceId: "intel-division", targetId: "oca", type: "authority" },
+    { sourceId: "intel-division", targetId: "sanitization-reviewer", type: "authority" },
+    { sourceId: "fdo", targetId: "afdo", type: "delegation" },
+  ],
+  defaultWorkflow: {
+    name: "Time-sensitive ISR release to coalition partner",
+    initiatorRoleId: "all-source-analyst",
+    targetAction: "Authorize Foreign Disclosure — SECRET//REL TO FVEY via Mission Partner Environment",
+    description:
+      "All-Source Analyst identifies ISR product requiring coalition release and initiates disclosure request. OCA must authorize the NOFORN-to-REL TO FVEY caveat change (mandatory). Sanitization Reviewer removes source-identifying details and compartmented indicators. FDO makes the foreign disclosure determination under NDP-1 (mandatory — cannot be threshold-skipped). When FDO is deployed forward, authority delegates to certified AFDO. Product released via MPE upon all three approvals.",
+  },
+  beforeMetrics: {
+    manualTimeHours: 96,
+    riskExposureDays: 21,
+    auditGapCount: 5,
+    approvalSteps: 8,
+  },
+  todayFriction: {
+    ...ARCHETYPES["multi-party-approval"].defaultFriction,
+    manualSteps: [
+      { trigger: "after-request", description: "All-Source Analyst submits disclosure request via JWICS — OCA and Sanitization Reviewer notified separately through J2 intelligence channels", delaySeconds: 10 },
+      { trigger: "before-approval", description: "OCA reviewing classification guide to authorize NOFORN-to-REL TO FVEY caveat change — Sanitization Reviewer cross-referencing source registers to identify elements requiring redaction", delaySeconds: 8 },
+      { trigger: "on-unavailable", description: "FDO deployed forward with limited JWICS connectivity — no certified Alternate FDO designated, mandatory foreign disclosure determination stalled pending FDO's return to main headquarters", delaySeconds: 12 },
+    ],
+    narrativeTemplate: "JWICS coordination with manual OCA classification review and stalled FDO foreign disclosure determination",
+  },
+  todayPolicies: [
+    {
+      id: "policy-coalition-sharing-today",
+      actorId: "nato-command",
+      threshold: {
+        k: 3,
+        n: 3,
+        approverRoleIds: ["fdo", "oca", "sanitization-reviewer"],
+      },
+      expirySeconds: 25,
+      delegationAllowed: false,
+    },
+  ],
+  regulatoryContext: REGULATORY_DB.defense,
+  tags: ["defense", "coalition", "isr", "noforn", "fdo", "afdo", "ndp-1", "oca", "sanitization", "fvey", "mpe", "jwics", "foreign-disclosure", "dodi-5230-11"],
+};

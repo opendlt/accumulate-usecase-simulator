@@ -1,0 +1,20 @@
+node_modules
+dist
+*.local
+.DS_Store
+*.tsbuildinfo
+
+# env files
+.env*
+
+# vercel
+.vercel
+
+# claude code
+.claude/
+
+# Windows reserved name artifact
+nul
+
+# Internal audit documents
+scenario_credibility_audit.md

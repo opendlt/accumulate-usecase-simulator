@@ -1,0 +1,278 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border-color);
+  --color-text: var(--text-color);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-brand-blue: var(--brand-blue);
+  --color-overlay: var(--overlay);
+
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-code: "JetBrains Mono", monospace;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-slide-down: slide-down 200ms ease-out;
+  --animate-slide-up: slide-up 200ms ease-out;
+  --animate-pulse-node: pulse-node 4s ease-in-out infinite;
+  --animate-dash-flow: dash-flow 1.5s linear infinite;
+  --animate-gradient-shift: gradient-shift 6s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+
+  @keyframes fade-in {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slide-down {
+    0% { opacity: 0; height: 0; }
+    100% { opacity: 1; height: var(--content-height, auto); }
+  }
+
+  @keyframes slide-up {
+    0% { opacity: 1; height: var(--content-height, auto); }
+    100% { opacity: 0; height: 0; }
+  }
+
+  @keyframes pulse-node {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.5); }
+  }
+
+  @keyframes dash-flow {
+    to { stroke-dashoffset: -20; }
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+}
+
+:root {
+  --bg: #0B0F17;
+  --surface: #101827;
+  --surface-2: #121C2D;
+  --border-color: #1F2A3D;
+  --text-color: #E7EEF9;
+  --text-muted: #A7B3C6;
+  --text-subtle: #7D8AA3;
+
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --primary-pressed: #1D4ED8;
+  --primary-soft: rgba(59, 130, 246, 0.12);
+
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #60A5FA;
+
+  --brand-blue: #00A6FB;
+
+  --overlay: #ffffff;
+  --logo-invert: 1;
+}
+
+.light {
+  --bg: #FFFFFF;
+  --surface: #F8FAFC;
+  --surface-2: #F1F5F9;
+  --border-color: #E2E8F0;
+  --text-color: #0B1220;
+  --text-muted: #475569;
+  --text-subtle: #64748B;
+
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-pressed: #1E40AF;
+  --primary-soft: rgba(37, 99, 235, 0.08);
+
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+  --info: #2563EB;
+
+  --brand-blue: #0284C7;
+
+  --overlay: #000000;
+  --logo-invert: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-color);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #3B82F6 0%, #00A6FB 50%, #60A5FA 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 6s ease infinite;
+}
+
+.glass {
+  background: rgba(16, 24, 39, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(31, 42, 61, 0.5);
+}
+
+.light .glass {
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), transparent, rgba(0, 166, 251, 0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-border:hover::after {
+  opacity: 1;
+}
+
+/* Node active glow breathing */
+@keyframes active-glow {
+  0%, 100% { box-shadow: 0 0 14px var(--glow-color, rgba(148,163,184,0.3)), 0 0 4px var(--glow-color, rgba(148,163,184,0.15)); }
+  50% { box-shadow: 0 0 28px var(--glow-color, rgba(148,163,184,0.55)), 0 0 10px var(--glow-color, rgba(148,163,184,0.3)); }
+}
+
+.animate-active-glow {
+  animation: active-glow 1.5s ease-in-out infinite;
+}
+
+/* Edge particle glow pulsing */
+@keyframes particle-glow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
+}
+
+/* Edge activation pulse */
+@keyframes edge-active-pulse {
+  0% { stroke-width: 2; opacity: 0.3; }
+  40% { stroke-width: 8; opacity: 0.7; }
+  100% { stroke-width: 4; opacity: 0.4; }
+}
+
+/* React Flow overrides — theme-aware using app CSS vars */
+
+/* Dark mode: override ReactFlow's default dark colors with our palette */
+.react-flow.dark {
+  --xy-background-color-default: var(--bg);
+  --xy-node-background-color-default: var(--surface);
+  --xy-node-border-default: 1px solid var(--border-color);
+  --xy-node-color-default: var(--text-color);
+  --xy-edge-stroke-default: var(--border-color);
+  --xy-edge-stroke-selected-default: var(--text-muted);
+  --xy-edge-label-background-color-default: var(--surface);
+  --xy-edge-label-color-default: var(--text-color);
+  --xy-minimap-background-color-default: var(--surface);
+  --xy-minimap-mask-background-color-default: rgba(11, 15, 23, 0.7);
+  --xy-minimap-node-background-color-default: var(--surface-2);
+  --xy-handle-background-color-default: var(--text-muted);
+  --xy-handle-border-color-default: var(--surface);
+  --xy-controls-button-background-color-default: var(--surface);
+  --xy-controls-button-background-color-hover-default: var(--surface-2);
+  --xy-controls-button-color-default: var(--text-muted);
+  --xy-controls-button-color-hover-default: var(--text-color);
+  --xy-controls-button-border-color-default: var(--border-color);
+  --xy-background-pattern-dots-color-default: var(--border-color);
+  --xy-selection-background-color-default: rgba(59, 130, 246, 0.08);
+  --xy-selection-border-default: 1px dotted rgba(59, 130, 246, 0.6);
+  background-color: var(--bg) !important;
+}
+
+/* Light mode: override ReactFlow's defaults with our light palette */
+.react-flow:not(.dark) {
+  --xy-background-color-default: var(--bg);
+  --xy-node-background-color-default: var(--surface);
+  --xy-node-border-default: 1px solid var(--border-color);
+  --xy-node-color-default: var(--text-color);
+  --xy-edge-stroke-default: var(--border-color);
+  --xy-edge-stroke-selected-default: var(--text-muted);
+  --xy-edge-label-background-color-default: var(--surface);
+  --xy-edge-label-color-default: var(--text-color);
+  --xy-minimap-background-color-default: var(--surface);
+  --xy-minimap-mask-background-color-default: rgba(248, 250, 252, 0.7);
+  --xy-minimap-node-background-color-default: var(--border-color);
+  --xy-handle-background-color-default: var(--text-subtle);
+  --xy-handle-border-color-default: var(--surface);
+  --xy-controls-button-background-color-default: var(--surface);
+  --xy-controls-button-background-color-hover-default: var(--surface-2);
+  --xy-controls-button-color-default: var(--text-muted);
+  --xy-controls-button-color-hover-default: var(--text-color);
+  --xy-controls-button-border-color-default: var(--border-color);
+  --xy-background-pattern-dots-color-default: var(--border-color);
+  background-color: var(--bg) !important;
+}
+
+.react-flow__minimap {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+}
+
+.react-flow__controls {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
