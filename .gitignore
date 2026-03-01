@@ -5,7 +5,6 @@ dist
 *.tsbuildinfo
 
 # env files
-.env*
 
 # vercel
 .vercel
@@ -18,3 +17,4 @@ nul
 
 # Internal audit documents
 scenario_credibility_audit.md
+config.bat
